@@ -2,7 +2,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count, Sum
-from django.core.cache import cache
 from datetime import date, timedelta
 from calendar import monthrange
 
@@ -11,6 +10,7 @@ from billing.models import Bill, PaymentRecord
 from properties.models import MaintenanceWorker, Building, House
 from announcements.models import Announcement, AnnouncementRead
 from accounts.permissions import IsAdmin
+from property_management.cache_utils import safe_cache
 
 
 class AdminDashboardView(APIView):
@@ -18,7 +18,7 @@ class AdminDashboardView(APIView):
 
     def get(self, request):
         cache_key = 'admin_dashboard_main'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -138,7 +138,7 @@ class AdminDashboardView(APIView):
             'arrears_list': arrears_list
         }
         
-        cache.set(cache_key, data, 300)
+        safe_cache.set(cache_key, data, 300)
         
         return Response(data)
 
@@ -157,7 +157,7 @@ class WorkerDashboardView(APIView):
             return Response({'error': '维修工档案不存在'}, status=404)
         
         cache_key = f'worker_dashboard_{user.id}'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -212,7 +212,7 @@ class WorkerDashboardView(APIView):
             'recent_tickets': ticket_list
         }
         
-        cache.set(cache_key, data, 60)
+        safe_cache.set(cache_key, data, 60)
         
         return Response(data)
 
@@ -226,7 +226,7 @@ class OwnerDashboardView(APIView):
             return Response({'error': '只有业主可以访问'}, status=403)
         
         cache_key = f'owner_dashboard_{user.id}'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -330,6 +330,6 @@ class OwnerDashboardView(APIView):
             'recent_bills': recent_bills
         }
         
-        cache.set(cache_key, data, 60)
+        safe_cache.set(cache_key, data, 60)
         
         return Response(data)

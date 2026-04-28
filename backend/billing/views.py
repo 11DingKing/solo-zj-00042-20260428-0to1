@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.db.models import Sum, Count, F
-from django.core.cache import cache
 from datetime import datetime, date
 
 from .models import BillingSetting, Bill, BillStatusLog, PaymentRecord
@@ -18,6 +17,7 @@ from .serializers import (
 )
 from properties.models import House, Building
 from accounts.permissions import IsAdmin, IsOwner
+from property_management.cache_utils import safe_cache
 
 
 class BillingSettingViewSet(viewsets.ModelViewSet):
@@ -86,7 +86,7 @@ class BillViewSet(viewsets.ModelViewSet):
             comment='账单创建'
         )
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             BillSerializer(bill, context={'request': request}).data,
@@ -137,7 +137,7 @@ class BillViewSet(viewsets.ModelViewSet):
                 payment_method='online'
             )
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             BillSerializer(bill, context={'request': request}).data
@@ -192,7 +192,7 @@ class BillViewSet(viewsets.ModelViewSet):
             
             created_count += 1
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response({
             'message': f'成功生成 {created_count} 条账单',
@@ -203,7 +203,7 @@ class BillViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='statistics')
     def statistics(self, request):
         cache_key = 'dashboard_billing_statistics'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -283,7 +283,7 @@ class BillViewSet(viewsets.ModelViewSet):
             'monthly_trend': monthly_data
         }
         
-        cache.set(cache_key, data, 300)
+        safe_cache.set(cache_key, data, 300)
         
         return Response(data)
 

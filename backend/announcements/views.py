@@ -2,7 +2,6 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.core.cache import cache
 
 from .models import Announcement, AnnouncementRead
 from .serializers import (
@@ -12,6 +11,7 @@ from .serializers import (
     UnreadCountSerializer,
 )
 from accounts.permissions import IsAdmin
+from property_management.cache_utils import safe_cache
 
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
@@ -42,7 +42,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         cache_key = f'announcements_list_{request.user.id}'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -57,7 +57,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
             serializer = self.get_serializer(queryset, many=True, context={'request': request})
             response = Response(serializer.data)
         
-        cache.set(cache_key, response.data, 300)
+        safe_cache.set(cache_key, response.data, 300)
         return response
 
     def retrieve(self, request, *args, **kwargs):
@@ -68,8 +68,8 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
                 announcement=instance,
                 user=request.user
             )
-            cache.delete_pattern(f'announcements_list_*')
-            cache.delete_pattern(f'dashboard_*')
+            safe_cache.delete_pattern(f'announcements_list_*')
+            safe_cache.delete_pattern(f'dashboard_*')
         
         serializer = self.get_serializer(instance, context={'request': request})
         return Response(serializer.data)
@@ -79,8 +79,8 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         announcement = serializer.save(created_by=request.user)
         
-        cache.delete_pattern('announcements_list_*')
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('announcements_list_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             AnnouncementSerializer(announcement, context={'request': request}).data,
@@ -89,20 +89,20 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
-        cache.delete_pattern('announcements_list_*')
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('announcements_list_*')
+        safe_cache.delete_pattern('dashboard_*')
         return response
 
     def destroy(self, request, *args, **kwargs):
         response = super().destroy(request, *args, **kwargs)
-        cache.delete_pattern('announcements_list_*')
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('announcements_list_*')
+        safe_cache.delete_pattern('dashboard_*')
         return response
 
     @action(detail=False, methods=['get'], url_path='unread-count')
     def unread_count(self, request):
         cache_key = f'announcements_unread_{request.user.id}'
-        cached_count = cache.get(cache_key)
+        cached_count = safe_cache.get(cache_key)
         
         if cached_count is not None:
             return Response({'unread_count': cached_count})
@@ -115,14 +115,14 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
             is_active=True
         ).exclude(id__in=read_ids).count()
         
-        cache.set(cache_key, unread_count, 60)
+        safe_cache.set(cache_key, unread_count, 60)
         
         return Response({'unread_count': unread_count})
 
     @action(detail=False, methods=['get'], url_path='latest')
     def latest(self, request):
         cache_key = f'announcements_latest_{request.user.id}'
-        cached_data = cache.get(cache_key)
+        cached_data = safe_cache.get(cache_key)
         
         if cached_data:
             return Response(cached_data)
@@ -134,7 +134,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
             context={'request': request}
         )
         
-        cache.set(cache_key, serializer.data, 300)
+        safe_cache.set(cache_key, serializer.data, 300)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'], url_path='mark-read')
@@ -147,9 +147,9 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         )
         
         if created:
-            cache.delete_pattern(f'announcements_list_*')
-            cache.delete_pattern(f'announcements_unread_{request.user.id}')
-            cache.delete_pattern('dashboard_*')
+            safe_cache.delete_pattern(f'announcements_list_*')
+            safe_cache.delete_pattern(f'announcements_unread_{request.user.id}')
+            safe_cache.delete_pattern('dashboard_*')
         
         return Response({'message': '已标记为已读'})
 
@@ -165,8 +165,8 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
                 user=request.user
             )
         
-        cache.delete_pattern(f'announcements_list_*')
-        cache.delete_pattern(f'announcements_unread_{request.user.id}')
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern(f'announcements_list_*')
+        safe_cache.delete_pattern(f'announcements_unread_{request.user.id}')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response({'message': '已标记所有公告为已读'})

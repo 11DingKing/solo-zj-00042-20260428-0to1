@@ -2,7 +2,6 @@ from rest_framework import generics, status, viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-from django.core.cache import cache
 
 from .models import Building, House, MaintenanceWorker
 from .serializers import (
@@ -15,6 +14,7 @@ from .serializers import (
     WorkerRecommendationSerializer,
 )
 from accounts.permissions import IsAdmin, IsOwner
+from property_management.cache_utils import safe_cache
 
 
 class BuildingViewSet(viewsets.ModelViewSet):
@@ -70,7 +70,7 @@ class HouseViewSet(viewsets.ModelViewSet):
         house.owner = request.user
         house.save()
         
-        cache.delete_many([f'user_profile_{request.user.id}'])
+        safe_cache.delete_many([f'user_profile_{request.user.id}'])
         
         return Response({'message': '房屋绑定成功'})
 
@@ -80,7 +80,7 @@ class HouseViewSet(viewsets.ModelViewSet):
             house = House.objects.get(owner=request.user)
             house.owner = None
             house.save()
-            cache.delete_many([f'user_profile_{request.user.id}'])
+            safe_cache.delete_many([f'user_profile_{request.user.id}'])
             return Response({'message': '房屋解绑成功'})
         except House.DoesNotExist:
             return Response(

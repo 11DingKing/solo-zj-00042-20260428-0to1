@@ -3,7 +3,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
-from django.core.cache import cache
 
 from .models import MaintenanceTicket, TicketImage, MaintenanceRecord, TicketStatusLog
 from .serializers import (
@@ -15,6 +14,7 @@ from .serializers import (
     TicketRatingSerializer,
 )
 from accounts.permissions import IsAdmin, IsOwner, IsMaintenance, IsAdminOrOwner, IsAdminOrMaintenance
+from property_management.cache_utils import safe_cache
 
 
 class MaintenanceTicketViewSet(viewsets.ModelViewSet):
@@ -64,7 +64,7 @@ class MaintenanceTicketViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         ticket = serializer.save()
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             MaintenanceTicketSerializer(ticket, context={'request': request}).data,
@@ -247,7 +247,7 @@ class MaintenanceTicketViewSet(viewsets.ModelViewSet):
                 ticket.assigned_worker.status = 'idle'
                 ticket.assigned_worker.save()
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             MaintenanceTicketSerializer(ticket, context={'request': request}).data
@@ -317,7 +317,7 @@ class MaintenanceTicketViewSet(viewsets.ModelViewSet):
         ticket.rating_comment = serializer.validated_data.get('comment', '')
         ticket.save()
         
-        cache.delete_pattern('dashboard_*')
+        safe_cache.delete_pattern('dashboard_*')
         
         return Response(
             MaintenanceTicketSerializer(ticket, context={'request': request}).data
