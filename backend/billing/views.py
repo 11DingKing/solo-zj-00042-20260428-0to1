@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from datetime import datetime, date
 
 from .models import BillingSetting, Bill, BillStatusLog, PaymentRecord
@@ -227,9 +227,9 @@ class BillViewSet(viewsets.ModelViewSet):
         
         buildings = Building.objects.annotate(
             total_amount=Sum('houses__bills__amount'),
-            paid_amount=Sum('houses__bills__amount', filter=models.Q(houses__bills__status=Bill.STATUS_PAID)),
+            paid_amount=Sum('houses__bills__amount', filter=Q(houses__bills__status=Bill.STATUS_PAID)),
             bill_count=Count('houses__bills'),
-            paid_count=Count('houses__bills', filter=models.Q(houses__bills__status=Bill.STATUS_PAID)),
+            paid_count=Count('houses__bills', filter=Q(houses__bills__status=Bill.STATUS_PAID)),
         ).values(
             'id', 'building_number', 'total_amount', 'paid_amount', 'bill_count', 'paid_count'
         )
