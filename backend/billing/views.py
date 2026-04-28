@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.db.models import Sum, Count, F, Q
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 from .models import BillingSetting, Bill, BillStatusLog, PaymentRecord
 from .serializers import (
@@ -253,7 +253,7 @@ class BillViewSet(viewsets.ModelViewSet):
         
         monthly_data = []
         for i in range(11, -1, -1):
-            month_date = today.replace(day=1) - (i * 30)
+            month_date = today.replace(day=1) - timedelta(days=i * 30)
             month_str = month_date.strftime('%Y-%m')
             
             month_bills = Bill.objects.filter(

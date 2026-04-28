@@ -17,7 +17,7 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
-  UnlinkOutlined,
+  DisconnectOutlined,
 } from '@ant-design/icons'
 import api, { extractListData } from '@/utils/api'
 
@@ -203,7 +203,7 @@ const HouseManagement: React.FC = () => {
             编辑
           </Button>
           {record.owner && (
-            <Button type="link" icon={<UnlinkOutlined />} onClick={() => handleUnbind(record.id)}>
+            <Button type="link" icon={<DisconnectOutlined />} onClick={() => handleUnbind(record.id)}>
               解绑
             </Button>
           )}

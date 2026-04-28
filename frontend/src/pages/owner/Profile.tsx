@@ -221,10 +221,10 @@ const OwnerProfile: React.FC = () => {
         }
       >
         <Descriptions column={2} bordered size="small">
-          <Descriptions.Item label={<><UserOutlined /> 用户名</Descriptions.Item>
-          <Descriptions.Item label={<><PhoneOutlined /> 手机号</Descriptions.Item>
-          <Descriptions.Item label={<><IdcardOutlined /> 角色</Descriptions.Item>
-          <Descriptions.Item label={<><HomeOutlined /> 房屋</Descriptions.Item>
+          <Descriptions.Item label="用户名">{user?.username || '-'}</Descriptions.Item>
+          <Descriptions.Item label="手机号">{user?.phone || '-'}</Descriptions.Item>
+          <Descriptions.Item label="角色">{user?.role_display || '-'}</Descriptions.Item>
+          <Descriptions.Item label="房屋">{houseInfo ? `${houseInfo.building_number}栋${houseInfo.unit_number}单元${houseInfo.room_number}室` : '未绑定'}</Descriptions.Item>
         </Descriptions>
       </Card>
 

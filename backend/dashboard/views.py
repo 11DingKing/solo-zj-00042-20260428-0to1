@@ -102,7 +102,6 @@ class AdminDashboardView(APIView):
                 'completed_count': completed_count
             })
         
-        from billing.models import Bill
         overdue_bills = Bill.objects.filter(
             status__in=['overdue', 'pending'],
             due_date__lt=today

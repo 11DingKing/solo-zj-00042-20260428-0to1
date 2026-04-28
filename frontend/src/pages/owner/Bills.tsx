@@ -227,7 +227,7 @@ const OwnerBills: React.FC = () => {
             {currentBill.status_logs && currentBill.status_logs.length > 0 && (
               <>
                 <Divider>状态变更记录</Divider>
-                <Timeline size="small">
+                <Timeline>
                   {currentBill.status_logs.map((log: any, idx: number) => (
                     <Timeline.Item key={idx}>
                       <p>

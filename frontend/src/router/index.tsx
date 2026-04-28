@@ -1,28 +1,30 @@
-import React, { lazy, Suspense } from 'react'
+import React from 'react'
 import { Navigate, useRoutes, RouteObject } from 'react-router-dom'
 import { Spin } from 'antd'
 
-const LoginPage = lazy(() => import('@/pages/Login'))
-const AdminLayout = lazy(() => import('@/layouts/AdminLayout'))
-const WorkerLayout = lazy(() => import('@/layouts/WorkerLayout'))
-const OwnerLayout = lazy(() => import('@/layouts/OwnerLayout'))
+import ErrorBoundary from '@/components/ErrorBoundary'
 
-const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'))
-const BuildingManagement = lazy(() => import('@/pages/admin/BuildingManagement'))
-const HouseManagement = lazy(() => import('@/pages/admin/HouseManagement'))
-const WorkerManagement = lazy(() => import('@/pages/admin/WorkerManagement'))
-const TicketManagement = lazy(() => import('@/pages/admin/Tickets'))
-const BillManagement = lazy(() => import('@/pages/admin/Bills'))
-const AnnouncementManagement = lazy(() => import('@/pages/admin/Announcements'))
+import LoginPage from '@/pages/Login'
+import AdminLayout from '@/layouts/AdminLayout'
+import WorkerLayout from '@/layouts/WorkerLayout'
+import OwnerLayout from '@/layouts/OwnerLayout'
 
-const WorkerDashboard = lazy(() => import('@/pages/worker/Dashboard'))
-const WorkerTickets = lazy(() => import('@/pages/worker/Tickets'))
+import AdminDashboard from '@/pages/admin/Dashboard'
+import BuildingManagement from '@/pages/admin/BuildingManagement'
+import HouseManagement from '@/pages/admin/HouseManagement'
+import WorkerManagement from '@/pages/admin/WorkerManagement'
+import TicketManagement from '@/pages/admin/Tickets'
+import BillManagement from '@/pages/admin/Bills'
+import AnnouncementManagement from '@/pages/admin/Announcements'
 
-const OwnerDashboard = lazy(() => import('@/pages/owner/Dashboard'))
-const OwnerTickets = lazy(() => import('@/pages/owner/Tickets'))
-const OwnerBills = lazy(() => import('@/pages/owner/Bills'))
-const OwnerProfile = lazy(() => import('@/pages/owner/Profile'))
-const Announcements = lazy(() => import('@/pages/owner/Announcements'))
+import WorkerDashboard from '@/pages/worker/Dashboard'
+import WorkerTickets from '@/pages/worker/Tickets'
+
+import OwnerDashboard from '@/pages/owner/Dashboard'
+import OwnerTickets from '@/pages/owner/Tickets'
+import OwnerBills from '@/pages/owner/Bills'
+import OwnerProfile from '@/pages/owner/Profile'
+import OwnerAnnouncements from '@/pages/owner/Announcements'
 
 const LoadingFallback = () => (
   <div style={{ 
@@ -35,10 +37,16 @@ const LoadingFallback = () => (
   </div>
 )
 
+const PageWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ErrorBoundary>
+    {children}
+  </ErrorBoundary>
+)
+
 const routes: RouteObject[] = [
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <PageWrapper><LoginPage /></PageWrapper>,
   },
   {
     path: '/',
@@ -46,7 +54,7 @@ const routes: RouteObject[] = [
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: <PageWrapper><AdminLayout /></PageWrapper>,
     children: [
       {
         path: '',
@@ -54,37 +62,37 @@ const routes: RouteObject[] = [
       },
       {
         path: 'dashboard',
-        element: <AdminDashboard />,
+        element: <PageWrapper><AdminDashboard /></PageWrapper>,
       },
       {
         path: 'buildings',
-        element: <BuildingManagement />,
+        element: <PageWrapper><BuildingManagement /></PageWrapper>,
       },
       {
         path: 'houses',
-        element: <HouseManagement />,
+        element: <PageWrapper><HouseManagement /></PageWrapper>,
       },
       {
         path: 'workers',
-        element: <WorkerManagement />,
+        element: <PageWrapper><WorkerManagement /></PageWrapper>,
       },
       {
         path: 'tickets',
-        element: <TicketManagement />,
+        element: <PageWrapper><TicketManagement /></PageWrapper>,
       },
       {
         path: 'bills',
-        element: <BillManagement />,
+        element: <PageWrapper><BillManagement /></PageWrapper>,
       },
       {
         path: 'announcements',
-        element: <AnnouncementManagement />,
+        element: <PageWrapper><AnnouncementManagement /></PageWrapper>,
       },
     ],
   },
   {
     path: '/worker',
-    element: <WorkerLayout />,
+    element: <PageWrapper><WorkerLayout /></PageWrapper>,
     children: [
       {
         path: '',
@@ -92,17 +100,17 @@ const routes: RouteObject[] = [
       },
       {
         path: 'dashboard',
-        element: <WorkerDashboard />,
+        element: <PageWrapper><WorkerDashboard /></PageWrapper>,
       },
       {
         path: 'tickets',
-        element: <WorkerTickets />,
+        element: <PageWrapper><WorkerTickets /></PageWrapper>,
       },
     ],
   },
   {
     path: '/owner',
-    element: <OwnerLayout />,
+    element: <PageWrapper><OwnerLayout /></PageWrapper>,
     children: [
       {
         path: '',
@@ -110,23 +118,23 @@ const routes: RouteObject[] = [
       },
       {
         path: 'dashboard',
-        element: <OwnerDashboard />,
+        element: <PageWrapper><OwnerDashboard /></PageWrapper>,
       },
       {
         path: 'tickets',
-        element: <OwnerTickets />,
+        element: <PageWrapper><OwnerTickets /></PageWrapper>,
       },
       {
         path: 'bills',
-        element: <OwnerBills />,
+        element: <PageWrapper><OwnerBills /></PageWrapper>,
       },
       {
         path: 'announcements',
-        element: <Announcements />,
+        element: <PageWrapper><OwnerAnnouncements /></PageWrapper>,
       },
       {
         path: 'profile',
-        element: <OwnerProfile />,
+        element: <PageWrapper><OwnerProfile /></PageWrapper>,
       },
     ],
   },
@@ -136,9 +144,9 @@ const AppRoutes: React.FC = () => {
   const element = useRoutes(routes)
   
   return (
-    <Suspense fallback={<LoadingFallback />}>
+    <React.Suspense fallback={<LoadingFallback />}>
       {element}
-    </Suspense>
+    </React.Suspense>
   )
 }
 
