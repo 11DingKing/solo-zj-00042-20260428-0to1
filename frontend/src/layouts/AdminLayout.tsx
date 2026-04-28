@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Layout, Menu, Avatar, Dropdown, Badge, Button, theme } from 'antd'
 import {
   DashboardOutlined,
-  BuildingOutlined,
+  BankOutlined,
   HomeOutlined,
   TeamOutlined,
   FileTextOutlined,
@@ -50,7 +50,7 @@ const AdminLayout: React.FC = () => {
     },
     {
       key: '/admin/buildings',
-      icon: <BuildingOutlined />,
+      icon: <BankOutlined />,
       label: '楼栋管理',
     },
     {
