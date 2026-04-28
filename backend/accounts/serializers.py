@@ -46,29 +46,11 @@ class UserLoginSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     role_display = serializers.CharField(source='get_role_display', read_only=True)
-    house_info = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone', 'role', 'role_display', 'house_info', 'date_joined']
+        fields = ['id', 'username', 'email', 'phone', 'role', 'role_display', 'date_joined']
         read_only_fields = ['id', 'role', 'date_joined']
-
-    def get_house_info(self, obj):
-        if obj.role == User.ROLE_OWNER:
-            try:
-                from properties.models import House
-                house = House.objects.filter(owner=obj).first()
-                if house:
-                    return {
-                        'id': house.id,
-                        'building_number': house.building.building_number,
-                        'unit_number': house.unit_number,
-                        'room_number': house.room_number,
-                        'area': house.area
-                    }
-            except Exception:
-                pass
-        return None
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
