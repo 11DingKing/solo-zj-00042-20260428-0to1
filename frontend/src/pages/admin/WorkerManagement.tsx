@@ -18,7 +18,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 
 const { Text } = Typography
 
@@ -52,7 +52,7 @@ const WorkerManagement: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/properties/workers/')
-      setWorkers(response.data)
+      setWorkers(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch workers:', error)
       message.error('获取维修工列表失败')

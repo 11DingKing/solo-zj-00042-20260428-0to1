@@ -39,7 +39,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -83,7 +83,7 @@ const AdminBills: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/billing/bills/')
-      setBills(response.data)
+      setBills(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch bills:', error)
       message.error('获取账单列表失败')
@@ -95,7 +95,7 @@ const AdminBills: React.FC = () => {
   const fetchHouses = async () => {
     try {
       const response = await api.get('/properties/houses/')
-      setHouses(response.data)
+      setHouses(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch houses:', error)
     }
@@ -104,7 +104,7 @@ const AdminBills: React.FC = () => {
   const fetchBuildings = async () => {
     try {
       const response = await api.get('/properties/buildings/')
-      setBuildings(response.data)
+      setBuildings(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch buildings:', error)
     }

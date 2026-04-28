@@ -17,7 +17,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 
 const { Text } = Typography
 
@@ -37,7 +37,7 @@ const BuildingManagement: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/properties/buildings/')
-      setBuildings(response.data)
+      setBuildings(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch buildings:', error)
       message.error('获取楼栋列表失败')

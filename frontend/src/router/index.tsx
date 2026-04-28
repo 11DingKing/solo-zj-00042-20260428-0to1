@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react'
-import { Navigate, useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes, RouteObject } from 'react-router-dom'
 import { Spin } from 'antd'
 
 const LoginPage = lazy(() => import('@/pages/Login'))
@@ -35,13 +35,7 @@ const LoadingFallback = () => (
   </div>
 )
 
-interface RouteConfig {
-  path: string
-  element: React.ReactNode
-  children?: RouteConfig[]
-}
-
-const routes: RouteConfig[] = [
+const routes: RouteObject[] = [
   {
     path: '/login',
     element: <LoginPage />,
@@ -138,27 +132,8 @@ const routes: RouteConfig[] = [
   },
 ]
 
-const renderRoutes = (routeList: RouteConfig[]): React.ReactNode => {
-  return routeList.map((route) => {
-    const { path, element, children } = route
-    
-    if (children) {
-      return {
-        path,
-        element,
-        children: renderRoutes(children),
-      }
-    }
-    
-    return {
-      path,
-      element,
-    }
-  })
-}
-
 const AppRoutes: React.FC = () => {
-  const element = useRoutes(renderRoutes(routes) as any)
+  const element = useRoutes(routes)
   
   return (
     <Suspense fallback={<LoadingFallback />}>

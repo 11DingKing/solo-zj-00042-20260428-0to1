@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { message } from 'antd'
 
 const api = axios.create({
@@ -23,7 +23,7 @@ api.interceptors.request.use(
 )
 
 api.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     return response
   },
   async (error) => {
@@ -68,5 +68,32 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+export const extractListData = (data: any): any[] => {
+  if (Array.isArray(data)) {
+    return data
+  }
+  if (data && typeof data === 'object' && 'results' in data && Array.isArray(data.results)) {
+    return data.results
+  }
+  return []
+}
+
+export const extractPaginatedData = (data: any) => {
+  if (data && typeof data === 'object' && 'results' in data) {
+    return {
+      items: data.results || [],
+      total: data.count || 0,
+      next: data.next,
+      previous: data.previous,
+    }
+  }
+  return {
+    items: Array.isArray(data) ? data : [],
+    total: Array.isArray(data) ? data.length : 0,
+    next: null,
+    previous: null,
+  }
+}
 
 export default api

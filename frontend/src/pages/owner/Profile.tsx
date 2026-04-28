@@ -24,7 +24,7 @@ import {
   PhoneOutlined,
   IdcardOutlined,
 } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 import dayjs from 'dayjs'
 import { useAuthStore } from '@/store/authStore'
 
@@ -52,8 +52,8 @@ const OwnerProfile: React.FC = () => {
         api.get('/maintenance/tickets/'),
         api.get('/billing/bills/'),
       ])
-      setTickets(ticketsRes.data)
-      setBills(billsRes.data)
+      setTickets(extractListData(ticketsRes.data))
+      setBills(extractListData(billsRes.data))
 
       const dashboardRes = await api.get('/dashboard/owner/')
       setHouseInfo(dashboardRes.data.house_info)
@@ -68,7 +68,7 @@ const OwnerProfile: React.FC = () => {
   const fetchPaymentHistory = async () => {
     try {
       const response = await api.get('/billing/bills/payment_history/')
-      setPaymentHistory(response.data)
+      setPaymentHistory(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch payment history:', error)
     }

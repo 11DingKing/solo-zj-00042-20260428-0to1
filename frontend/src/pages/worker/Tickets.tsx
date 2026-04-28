@@ -20,7 +20,7 @@ import {
 } from 'antd'
 import { PlusOutlined, EyeOutlined, CheckCircleOutlined } from '@ant-design/icons'
 import type { UploadFile, UploadProps } from 'antd'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -51,7 +51,7 @@ const WorkerTickets: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/maintenance/tickets/')
-      setTickets(response.data)
+      setTickets(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch tickets:', error)
       message.error('获取工单列表失败')

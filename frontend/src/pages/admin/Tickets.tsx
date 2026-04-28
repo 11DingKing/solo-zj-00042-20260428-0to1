@@ -18,7 +18,7 @@ import {
   Badge,
 } from 'antd'
 import { EyeOutlined, UserOutlined, CheckCircleOutlined } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -51,7 +51,7 @@ const AdminTickets: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/maintenance/tickets/')
-      setTickets(response.data)
+      setTickets(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch tickets:', error)
       message.error('获取工单列表失败')
@@ -63,7 +63,7 @@ const AdminTickets: React.FC = () => {
   const fetchWorkers = async () => {
     try {
       const response = await api.get('/properties/workers/')
-      setWorkers(response.data)
+      setWorkers(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch workers:', error)
     }

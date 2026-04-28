@@ -19,7 +19,7 @@ import {
   DeleteOutlined,
   UnlinkOutlined,
 } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 
 const { Text } = Typography
 
@@ -43,7 +43,7 @@ const HouseManagement: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/properties/houses/')
-      setHouses(response.data)
+      setHouses(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch houses:', error)
       message.error('获取房屋列表失败')
@@ -55,7 +55,7 @@ const HouseManagement: React.FC = () => {
   const fetchBuildings = async () => {
     try {
       const response = await api.get('/properties/buildings/')
-      setBuildings(response.data)
+      setBuildings(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch buildings:', error)
     }
@@ -64,7 +64,7 @@ const HouseManagement: React.FC = () => {
   const fetchOwners = async () => {
     try {
       const response = await api.get('/accounts/users/?role=owner')
-      setOwners(response.data)
+      setOwners(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch owners:', error)
     }

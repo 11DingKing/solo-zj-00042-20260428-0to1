@@ -20,7 +20,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from '@ant-design/icons'
-import api from '@/utils/api'
+import api, { extractListData } from '@/utils/api'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -43,7 +43,7 @@ const AdminAnnouncements: React.FC = () => {
     setLoading(true)
     try {
       const response = await api.get('/announcements/')
-      setAnnouncements(response.data)
+      setAnnouncements(extractListData(response.data))
     } catch (error) {
       console.error('Failed to fetch announcements:', error)
       message.error('获取公告列表失败')
